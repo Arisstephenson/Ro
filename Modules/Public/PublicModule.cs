@@ -24,47 +24,7 @@ namespace DiscordExampleBot.Modules.Public
             _cl = cl;
         }
 
-        private string RetrieveGuildData(ulong guildID, DataType data)
-        {
-            DirectoryInfo dir;
-            FileStream fi;
-            if (Directory.Exists($"C:\\ArissBot\\Data\\{guildID}"))
-            {
-                dir = new DirectoryInfo($"C:\\ArissBot\\Data\\{guildID}");
-            }
-            else
-            {
-                dir = Directory.CreateDirectory($"C:\\ArissBot\\Data\\{guildID}");
-                Console.WriteLine($"Creating Directory {guildID} ({_cl.GetGuild(guildID).Name})...");
-            }
-            fi = new FileInfo($"{dir.FullName}\\{data}").Open(FileMode.OpenOrCreate);
-            Console.WriteLine($"Opening File {data}...");
-            StreamReader sr = new StreamReader(fi);
-            string tempstring = sr.ReadToEnd();
-            sr.Dispose();
-            return tempstring;
-        }
-        private void SetGuildData(ulong guildID, DataType data, string whatToWrite)
-        {
-            DirectoryInfo dir;
-            FileStream fi;
-            if (Directory.Exists($"C:\\ArissBot\\Data\\{guildID}"))
-            {
-                dir = new DirectoryInfo($"C:\\ArissBot\\Data\\{guildID}");
-            }
-            else
-            {
-                dir = Directory.CreateDirectory($"C:\\ArissBot\\Data\\{guildID}");
-                Console.WriteLine($"Creating Directory {guildID} ({_cl.GetGuild(guildID).Name})...");
-            }
-            fi = new FileInfo($"{dir.FullName}\\{data}").Open(FileMode.Append);
-            Console.WriteLine($"Writing to File {data}...");
-            StreamWriter sw = new StreamWriter(fi);
-            sw.Write( /** RetrieveGuildData(guildID, data) + **/ whatToWrite);
-            sw.Flush();
-            sw.Dispose();
-            return;
-        }
+
         static Dictionary<string, string> tags = new Dictionary<string, string>();
         [Command("invite")]
         [Summary("Returns the OAuth2 Invite URL of the bot")]
@@ -73,7 +33,7 @@ namespace DiscordExampleBot.Modules.Public
             Console.WriteLine("Creating Invite...");
             var application = await Context.Client.GetApplicationInfoAsync();
             await ReplyAsync(
-                $"A user with `MANAGE_SERVER` can invite me to your server here: <https://discordapp.com/oauth2/authorize?client_id={application.Id}&scope=bot>");
+                $"A user with `MANAGE_SERVER` can invite me to your server here: <https://discordapp.com/oauth2/authorize?client_id={application.Id}&scope=bot&permissions=8>");
         }
         [Command("hello")]
         [Summary("Says hello!")]
@@ -115,29 +75,7 @@ namespace DiscordExampleBot.Modules.Public
             await Context.Channel.DeleteMessagesAsync(await Context.Channel.GetMessagesAsync(b + 1).Flatten());
             await ReplyAsync($"{Context.Message.Author.Mention}, successfully cleared {b} messages!");
         }
-        [Command("tag")]
-        [Summary("Returns the chosen tag.")]
-        public async Task ReadTag([Remainder] string input)
-        {
-            Dictionary<string, string> tagdict = new Dictionary<string, string>();
-            Console.WriteLine("Retrieving Tag...");
-            /** if (tags.TryGetValue(input, out string tagreturn) == true)
-            {
-                await ReplyAsync($"{tagreturn}");
-            }
-            else
-            {
-                await ReplyAsync($"Tag not found!");
-            }**/
-            string vars = RetrieveGuildData(Context.Guild.Id, DataType.Tags);
-            string[] varsplit = vars.Split('↓');
-            foreach (string str in varsplit)
-            {
-                string[] strsplit = str.Split('→');
-                tagdict.Add(strsplit.First(), strsplit.Last());
-            }
-            await ReplyAsync(tagdict[input]);
-        }
+
         [Command("help")]
         [Summary("Shows available commands.")]
         public async Task Help()
@@ -151,32 +89,6 @@ namespace DiscordExampleBot.Modules.Public
                 .WithDescription($"{milist}")
                 .WithColor(new Color(200, 200, 200));
             await ReplyAsync($"", false, emb.Build());
-        }
-        [Command("tags")]
-        [Summary("Lists the tags for this server")]
-        public async Task ListTags()
-        {
-            Dictionary<string, string> tagdict = new Dictionary<string, string>();
-            string vars = RetrieveGuildData(Context.Guild.Id, DataType.Tags);
-            string[] varsplit = vars.Split('↓');
-            foreach (string str in varsplit)
-            {
-                string[] strsplit = str.Split('→');
-                tagdict.Add(strsplit.First(), strsplit.Last());
-            }
-            await ReplyAsync(string.Join(", ", tagdict.Keys));
-        }
-        [Command("Emojify", RunMode = RunMode.Async)]
-        [Summary("Emojify's a message")]
-        public async Task Emojify([Remainder] string rem)
-        {
-            rem = rem.ToLower();
-            string estring = string.Empty;
-            foreach (char character in rem)
-            {
-                estring += $"{Em.GetEmoji(character.ToString())} ";
-            }
-            await ReplyAsync(estring);
         }
         [Command("GetFile")]
         [Summary("Gets a retrieves a file from bot's host")]
@@ -206,16 +118,6 @@ namespace DiscordExampleBot.Modules.Public
                 }
             }
             await ReplyAsync($"{Format.Code(dirs, "bat")}");
-        }
-        [Command("create")]
-        [Summary("Creates a tag.")]
-        public async Task WriteTag([Remainder] string input)
-        {
-            Console.WriteLine("Creating Tag...");
-            string[] _args = input.Split(' ');
-            List<string> inputlist = _args.ToList();
-            SetGuildData(Context.Guild.Id, DataType.Tags, inputlist[0] + "→" + $"{ Format.Code(String.Join(" ", inputlist.Skip(1).ToArray()))}" + "↓");
-            await ReplyAsync($"Added tag {inputlist[0]}!");
         }
 		/**
 		 * This command litterally craps itself for afro
