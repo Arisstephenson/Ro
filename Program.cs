@@ -74,6 +74,7 @@ namespace DiscordExampleBot
     }
     public class Program
     {
+		
         // string data;
         // Convert our sync main to an async main.
         public static void Main(string[] args) =>
@@ -88,7 +89,7 @@ namespace DiscordExampleBot
             client.Log += (async x => {
                 await Console.Error.WriteLineAsync(x.Message);
             });
-            var token = "insert token here";
+			var token = File.ReadAllText("token.txt");
 
             // Login and connect to Discord.
             Console.WriteLine("Logging in...");
@@ -121,7 +122,7 @@ namespace DiscordExampleBot
         private Task Log(LogMessage msg)
         {
             Console.WriteLine(msg.ToString());
-            return Task.CompletedTask;
+			return System.Threading.Tasks.Task.CompletedTask;
         }
         async private Task GetInput()
         {
@@ -138,6 +139,7 @@ namespace DiscordExampleBot
                     Console.WriteLine("Logging Out...");
                     await client.LogoutAsync();
                     Console.WriteLine("The bot has been shut down, until next time ;)");
+
                 }
             }
             return;

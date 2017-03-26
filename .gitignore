@@ -8,6 +8,7 @@
 # config
 bin/Debug/token.txt
 bin/Release/token.txt
+token.txt
 
 # build
 [Oo]bj/

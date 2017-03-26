@@ -23,7 +23,6 @@ namespace DiscordExampleBot
                 await Console.Error.WriteLineAsync(x.Message);
             });
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
-
             client.MessageReceived += HandleCommand;
         }
 
