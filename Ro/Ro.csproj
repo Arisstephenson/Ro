@@ -89,6 +89,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Modules\Public\PublicModule.cs" />
     <Compile Include="CommandHandler.cs" />
+    <Compile Include="Modules\Public\StaffModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

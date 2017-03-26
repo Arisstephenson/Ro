@@ -121,7 +121,7 @@ namespace DiscordExampleBot
         private Task Log(LogMessage msg)
         {
             Console.WriteLine(msg.ToString());
-            return Task.CompletedTask;
+			return System.Threading.Tasks.Task.CompletedTask;
         }
         async private Task GetInput()
         {
@@ -138,6 +138,7 @@ namespace DiscordExampleBot
                     Console.WriteLine("Logging Out...");
                     await client.LogoutAsync();
                     Console.WriteLine("The bot has been shut down, until next time ;)");
+					Environment.Exit(0);
                 }
             }
             return;
