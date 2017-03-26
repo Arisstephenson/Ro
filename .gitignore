@@ -1,6 +1,14 @@
 # Autosave files
 *~
 
+# Rider
+.idea/
+*.iml
+
+# config
+bin/Debug/token.txt
+bin/Release/token.txt
+
 # build
 [Oo]bj/
 [Bb]in/

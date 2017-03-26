@@ -45,5 +45,6 @@ namespace Ro
 
 			await user.RemoveRoleAsync(muteRole);
 		}
+
 	}
 }

@@ -186,7 +186,8 @@ namespace DiscordExampleBot.Modules.Public
         public async Task GetFile([Remainder] string filename)
         {
             Console.WriteLine("Getting File...");
-            await Context.Channel.SendFileAsync(filename);
+			Stream x = new FileStream(filename, FileMode.Open);
+			await Context.Channel.SendFileAsync(x, filename, null, false, null);
         }
         [Command("dir")]
         [Summary("returns files in directory from host")]
@@ -218,6 +219,8 @@ namespace DiscordExampleBot.Modules.Public
             SetGuildData(Context.Guild.Id, DataType.Tags, inputlist[0] + "→" + $"{ Format.Code(String.Join(" ", inputlist.Skip(1).ToArray()))}" + "↓");
             await ReplyAsync($"Added tag {inputlist[0]}!");
         }
+		/**
+		 * This command litterally craps itself for afro
         [Command("set")]
         [RequireUserPermission(GuildPermission.Administrator)]
         public async Task Set([Remainder]string remaining)
@@ -238,6 +241,7 @@ namespace DiscordExampleBot.Modules.Public
                     }
                     else return;
                 });
+
                 bool DetectLinks(SocketMessage sm)
                 {
                     Regex reg = new Regex("http", RegexOptions.IgnoreCase);
@@ -258,6 +262,7 @@ namespace DiscordExampleBot.Modules.Public
                 await ReplyAsync($"Updated tag {targetvar}!");
             }
         }
+        */
         [Command("say")]
         [Alias("echo")]
         [RequireOwner]
