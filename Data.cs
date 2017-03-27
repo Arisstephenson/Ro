@@ -8,7 +8,7 @@ using Discord.WebSocket;
 
 namespace DiscordExampleBot
 {
-    class Data
+    public class Data
     {
         public void SetGuildData(ulong guildID, DataType data, string whatToWrite, DiscordSocketClient _cl)
         {

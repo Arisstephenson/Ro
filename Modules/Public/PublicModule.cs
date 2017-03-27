@@ -6,16 +6,14 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 namespace DiscordExampleBot.Modules.Public
 {
     public class PublicModule : ModuleBase
     {
-        //  public string data;
+        //fields
         public ModuleInfo _mi;
         public DiscordSocketClient _cl;
+        //constructor
         public PublicModule(CommandService serv, DiscordSocketClient client)
         {
             ModuleInfo mi = serv.Modules.First();
@@ -23,30 +21,27 @@ namespace DiscordExampleBot.Modules.Public
             _mi = mi;
             _cl = cl;
         }
-
-
-        static Dictionary<string, string> tags = new Dictionary<string, string>();
-        [Command("invite")]
-        [Summary("Returns the OAuth2 Invite URL of the bot")]
-        public async Task Invite()
+        //Commands
+        [Command("invite"), Summary("Returns the OAuth2 Invite URL of the bot")]
+            public async Task Invite()
         {
             Console.WriteLine("Creating Invite...");
             var application = await Context.Client.GetApplicationInfoAsync();
             await ReplyAsync(
                 $"A user with `MANAGE_SERVER` can invite me to your server here: <https://discordapp.com/oauth2/authorize?client_id={application.Id}&scope=bot&permissions=8>");
         }
-        [Command("hello")]
-        [Summary("Says hello!")]
-        public async Task Hello()
+
+        [Command("hello"), Summary("Says hello!")]
+            public async Task Hello()
         {
             Console.WriteLine("Saying Hello...");
             var name = Context.User.Username;
             await ReplyAsync(
                 $"Hello {name}!");
         }
-        [Command("pinfo")]
-        [Summary("Gets info about mentioned player.")]
-        public async Task GetInfo([Remainder] string mention = "0")
+
+        [Command("pinfo"), Summary("Gets info about mentioned player.")]
+            public async Task GetInfo([Remainder] string mention = "0")
         {
             if (mention == "0")
             {
@@ -67,18 +62,9 @@ namespace DiscordExampleBot.Modules.Public
                 .WithImageUrl($"{gusr.GetAvatarUrl(ImageFormat.Png, 128)}")
                 .Build());
         }
-        [Command("clear")]
-        [Summary("Clears messages.")]
-        [RequireUserPermission(GuildPermission.ManageMessages)]
-        public async Task ClearMessages([Remainder] int b)
-        {
-            await Context.Channel.DeleteMessagesAsync(await Context.Channel.GetMessagesAsync(b + 1).Flatten());
-            await ReplyAsync($"{Context.Message.Author.Mention}, successfully cleared {b} messages!");
-        }
 
-        [Command("help")]
-        [Summary("Shows available commands.")]
-        public async Task Help()
+        [Command("help"), Summary("Shows available commands.")]
+            public async Task Help()
         {
             var __mi = _mi.Commands.OrderBy(x => { return x.Aliases.First().ToCharArray().First(); }).ToArray();
             string milist = string.Empty;
@@ -90,35 +76,7 @@ namespace DiscordExampleBot.Modules.Public
                 .WithColor(new Color(200, 200, 200));
             await ReplyAsync($"", false, emb.Build());
         }
-        [Command("GetFile")]
-        [Summary("Gets a retrieves a file from bot's host")]
-        [RequireOwner]
-        public async Task GetFile([Remainder] string filename)
-        {
-            Console.WriteLine("Getting File...");
-			Stream x = new FileStream(filename, FileMode.Open);
-			await Context.Channel.SendFileAsync(x, filename, null, false, null);
-        }
-        [Command("dir")]
-        [Summary("returns files in directory from host")]
-        [RequireOwner]
-        public async Task GetDir([Remainder] string filename)
-        {
-            Console.WriteLine("Getting File...");
-            string dirs = "";
-            foreach (FileSystemInfo fs in new DirectoryInfo(filename).GetFileSystemInfos())
-            {
-                if (fs.Extension == string.Empty)
-                {
-                    dirs += $"<dir> {fs.Name},\r";
-                }
-                else
-                {
-                    dirs += $"{fs.Name},\r";
-                }
-            }
-            await ReplyAsync($"{Format.Code(dirs, "bat")}");
-        }
+
 		/**
 		 * This command litterally craps itself for afro
         [Command("set")]
@@ -163,24 +121,15 @@ namespace DiscordExampleBot.Modules.Public
             }
         }
         */
-        [Command("say")]
-        [Alias("echo")]
-        [RequireOwner]
-        [Summary("Echos the provided input.")]
-        public async Task Say([Remainder] string input)
-        {
-            Console.WriteLine("Mocking...");
-            await ReplyAsync(input);
-        }
-        [Command("Support")]
-        [Summary("Returns a link to Ro's support server")]
-        public async Task GetServer()
+
+        [Command("support"), Summary("Returns a link to Ro's support server")]
+            public async Task GetServer()
         {
             await ReplyAsync($"Do you need help with Ro? Visit the support server: https://discord.gg/4QcF7fx");
         }
-        [Command("info")]
-        [Summary("Detailed info about the bot.")]
-        public async Task Info()
+
+        [Command("info"), Summary("Detailed info about the bot.")]
+            public async Task Info()
         {
             Console.WriteLine("Providing Information...");
             var application = await Context.Client.GetApplicationInfoAsync();
@@ -198,14 +147,17 @@ namespace DiscordExampleBot.Modules.Public
                 $"- Users: {(Context.Client as DiscordSocketClient).Guilds.Sum(g => g.Users.Count)}"
             );
         }
-        [Command("embed")]
-        [Summary("creates embed with title, desc, footer, separate with $")]
-        public async Task CreateEmbed([Remainder] string rem) {
+
+        [Command("embed"), Summary("creates embed with title, desc, footer, separate with $")]
+            public async Task CreateEmbed([Remainder] string rem) {
             string[] splitrem = rem.Split('$');
             await ReplyAsync("", false, new EmbedBuilder().WithTitle(splitrem[0]).WithDescription(splitrem[splitrem.Length-2]).WithFooter(new EmbedFooterBuilder().WithText(splitrem.Last())).Build());
         }
+
+        //Methods
         private static string GetUptime()
             => (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss");
+
         private static string GetHeapSize() => Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2).ToString();
     }
 }

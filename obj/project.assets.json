@@ -7579,7 +7579,7 @@
           },
           "Discord.Net.Commands": {
             "target": "Package",
-            "version": "[1.0.0-rc-00652, )"
+            "version": "1.0.0-rc-00652"
           },
           "Microsoft.NETCore.App": {
             "target": "Package",

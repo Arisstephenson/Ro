@@ -7,7 +7,7 @@ using Discord.Commands;
 
 namespace DiscordExampleBot
 {
-    enum DataType
+    public enum DataType
     {
         Vars = 'v',
         Levels = 'l',

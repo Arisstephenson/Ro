@@ -4,19 +4,17 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 
 namespace DiscordExampleBot.Modules.Public
 {
-    class FunModule : ModuleBase
+    public class FunModule : ModuleBase
     {
+        //fields
         public Data dat;
         public ModuleInfo _mi;
         public DiscordSocketClient _cl;
+        //constructor
         public FunModule(CommandService serv, DiscordSocketClient client)
         {
             ModuleInfo mi = serv.Modules.First();
@@ -24,6 +22,7 @@ namespace DiscordExampleBot.Modules.Public
             _mi = mi;
             _cl = cl;
         }
+        //commands
         [Command("Emojify", RunMode = RunMode.Async)]
         [Summary("Emojify's a message")]
         public async Task Emojify([Remainder] string rem)
@@ -76,6 +75,7 @@ namespace DiscordExampleBot.Modules.Public
             }
             await ReplyAsync(string.Join(", ", tagdict.Keys));
         }
-#endregion
+        #endregion
+
     }
 }

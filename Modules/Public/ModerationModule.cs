@@ -4,19 +4,16 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 
 namespace Ro
 {
 	public class ModerationModule : ModuleBase
 	{
-		//  public string data;
+        //fields
 		public ModuleInfo _mi;
 		public DiscordSocketClient _cl;
+        //constructor
 		public ModerationModule(CommandService serv, DiscordSocketClient client)
 		{
 			ModuleInfo mi = serv.Modules.First();
@@ -24,10 +21,9 @@ namespace Ro
 			_mi = mi;
 			_cl = cl;
 		}
-
-		[Command("mute"), Summary("Mutes a user")]
-        [RequireUserPermission(GuildPermission.ManageMessages)]
-		public async Task Mute([Remainder] string a)
+        //commands
+		[Command("mute"), Summary("Mutes a user"), RequireUserPermission(GuildPermission.ManageMessages)]
+		    public async Task Mute([Remainder] string a)
 		{
             GuildPermissions perms = GuildPermissions.None;
             perms = Context.Guild.EveryoneRole.Permissions.Modify(sendMessages:false);
@@ -48,9 +44,9 @@ namespace Ro
                 await user.AddRoleAsync(muteRole);
             await ReplyAsync($"Muted {user}!");
 		}
-		[Command("unmute"), Summary("Unmutes a user")]
-        [RequireUserPermission(GuildPermission.ManageMessages)]
-        public async Task Unmute([Remainder] string a)
+
+		[Command("unmute"), Summary("Unmutes a user"), RequireUserPermission(GuildPermission.ManageMessages)]
+            public async Task Unmute([Remainder] string a)
 		{
             var mutedUserId = Context.Message.MentionedUserIds.First();
 			var guild = Context.Guild;
@@ -64,5 +60,14 @@ namespace Ro
             await ReplyAsync($"Unmuted {user}!");
         }
 
-	}
+        [Command("clear"), Summary("Clears messages."), RequireUserPermission(GuildPermission.ManageMessages)]
+            public async Task ClearMessages([Remainder] int b)
+        {
+            await Context.Channel.DeleteMessagesAsync(await Context.Channel.GetMessagesAsync(b + 1).Flatten());
+            await ReplyAsync($"{Context.Message.Author.Mention}, successfully cleared {b} messages!");
+        }
+
+
+
+    }
 }
