@@ -1,7 +1,7 @@
 # Ro
 <!--[![Discord](https://discordapp.com/api/guilds/294239734048358416/widget.png)](https://discord.gg/4QcF7fx)-->
 
-###Ro discord bot.
+### Ro discord bot.
 
 Ro is a work-in-progress bot designed to replace other bots by combining the functionalities of them.
 
