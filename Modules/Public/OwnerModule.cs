@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 namespace DiscordExampleBot.Modules.Public
 {
+    [Name("Owner Commands")]
     public class OwnerModule : ModuleBase
     {
         //fields
@@ -85,5 +86,6 @@ namespace DiscordExampleBot.Modules.Public
             Console.WriteLine("Mocking...");
             await ReplyAsync(input);
         }
+
     }
 }

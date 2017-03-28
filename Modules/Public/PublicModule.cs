@@ -6,20 +6,25 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Collections.Generic;
 namespace DiscordExampleBot.Modules.Public
 {
+    [Name("Public Commands")]
     public class PublicModule : ModuleBase
     {
         //fields
         public ModuleInfo _mi;
         public DiscordSocketClient _cl;
+        public IEnumerable<ModuleInfo> _mis;
         //constructor
         public PublicModule(CommandService serv, DiscordSocketClient client)
         {
             ModuleInfo mi = serv.Modules.First();
+            var mis = serv.Modules;
             DiscordSocketClient cl = client;
             _mi = mi;
             _cl = cl;
+            _mis = mis;
         }
         //Commands
         [Command("invite"), Summary("Returns the OAuth2 Invite URL of the bot")]
@@ -66,15 +71,29 @@ namespace DiscordExampleBot.Modules.Public
         [Command("help"), Summary("Shows available commands.")]
             public async Task Help()
         {
-            var __mi = _mi.Commands.OrderBy(x => { return x.Aliases.First().ToCharArray().First(); }).ToArray();
-            string milist = string.Empty;
-            __mi.All(x => { milist += ($"{x.Aliases.First()}, {x.Summary} \n"); return true; });
-            Console.WriteLine("Listing Commands...");
-            EmbedBuilder emb = new EmbedBuilder();
-            emb.WithTitle(Format.Bold("Commands"))
-                .WithDescription($"{milist}")
-                .WithColor(new Color(200, 200, 200));
-            await ReplyAsync($"", false, emb.Build());
+            var marray = _mis.ToArray();
+            string[] ListCommands = new string[marray.Length];
+            for (int i = 0; i < marray.Length; i++)
+            {
+                var mod = marray[i];
+                var tempstring = "";
+                tempstring += $"\r {Format.Bold("["+mod.Name+"]")} \r";
+                foreach(CommandInfo com in mod.Commands)
+                {
+                    tempstring += com.Aliases.First() + ", ";
+                }
+                ListCommands[i] = tempstring;
+            }
+
+
+            var myembed = new EmbedBuilder()
+                .WithTitle($"{Format.Bold("Ro Commands")}");
+            foreach(string mystring in ListCommands)
+            {
+                string[] mystrings = mystring.Split(']');
+                myembed.AddField(new EmbedFieldBuilder().WithValue(mystrings[1].TrimStart('*') + "").WithName("\n" + mystrings[0] + "]**").WithIsInline(true));
+            }
+            await ReplyAsync("", false, myembed.Build());
         }
 
 		/**
@@ -149,9 +168,8 @@ namespace DiscordExampleBot.Modules.Public
         }
 
         [Command("embed"), Summary("creates embed with title, desc, footer, separate with $")]
-            public async Task CreateEmbed([Remainder] string rem) {
-            string[] splitrem = rem.Split('$');
-            await ReplyAsync("", false, new EmbedBuilder().WithTitle(splitrem[0]).WithDescription(splitrem[splitrem.Length-2]).WithFooter(new EmbedFooterBuilder().WithText(splitrem.Last())).Build());
+            public async Task CreateEmbed(string title = "", string desc = "", string footer = "") {
+            await ReplyAsync("", false, new EmbedBuilder().WithTitle(title).WithDescription(desc).WithFooter(new EmbedFooterBuilder().WithText(footer)).Build());
         }
 
         //Methods

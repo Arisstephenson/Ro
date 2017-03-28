@@ -8,7 +8,8 @@ using System.Collections.Generic;
 
 namespace Ro
 {
-	public class ModerationModule : ModuleBase
+    [Name("Moderation Commands")]
+    public class ModerationModule : ModuleBase
 	{
         //fields
 		public ModuleInfo _mi;

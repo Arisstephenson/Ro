@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace DiscordExampleBot.Modules.Public
 {
+    [Name("Fun Commands")]
     public class FunModule : ModuleBase
     {
         //fields
@@ -23,9 +24,8 @@ namespace DiscordExampleBot.Modules.Public
             _cl = cl;
         }
         //commands
-        [Command("Emojify", RunMode = RunMode.Async)]
-        [Summary("Emojify's a message")]
-        public async Task Emojify([Remainder] string rem)
+        [Command("Emojify", RunMode = RunMode.Async), Summary("Emojify's a message")]
+            public async Task Emojify([Remainder] string rem)
         {
             rem = rem.ToLower();
             string estring = string.Empty;
@@ -76,6 +76,7 @@ namespace DiscordExampleBot.Modules.Public
             await ReplyAsync(string.Join(", ", tagdict.Keys));
         }
         #endregion
+
 
     }
 }
