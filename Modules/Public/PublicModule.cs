@@ -80,20 +80,25 @@ namespace DiscordExampleBot.Modules.Public
                 tempstring += $"\r {Format.Bold("["+mod.Name+"]")} \r";
                 foreach(CommandInfo com in mod.Commands)
                 {
-                    tempstring += com.Aliases.First() + ", ";
+                    tempstring += com.Aliases.First() + "\r\r•";
                 }
-                ListCommands[i] = tempstring;
+                ListCommands[i] = tempstring.TrimEnd(new char[] { '\\', 'r', '•' }) + "\n⠀";
             }
 
-
+            var application = await Context.Client.GetApplicationInfoAsync();
             var myembed = new EmbedBuilder()
-                .WithTitle($"{Format.Bold("Ro Commands")}");
-            foreach(string mystring in ListCommands)
+                .WithTitle($"{Format.Bold("__Ro Commands__")}").WithFooter(new EmbedFooterBuilder().WithText($"{application.Name} by {application.Owner.Username}").WithIconUrl(application.Owner.GetAvatarUrl()));
+            for(int i = 0; i < ListCommands.Length; i++)
             {
+                string mystring = ListCommands[i];
                 string[] mystrings = mystring.Split(']');
                 myembed.AddField(new EmbedFieldBuilder().WithValue(mystrings[1].TrimStart('*') + "").WithName("\n" + mystrings[0] + "]**").WithIsInline(true));
+                //myembed.AddField(new EmbedFieldBuilder().WithValue("⠀").WithName("⠀").WithIsInline(true));
+                //myembed.AddField(new EmbedFieldBuilder().WithValue("⠀").WithName("⠀").WithIsInline(true)); //for spacing to compensate for icon
+                // (i == ListCommands.Length - 1) { continue; }
+                //myembed.AddField(new EmbedFieldBuilder().WithValue("⠀").WithName("⠀").WithIsInline(true));
             }
-            await ReplyAsync("", false, myembed.Build());
+            await ReplyAsync("", false, myembed.WithThumbnailUrl(application.IconUrl).WithColor(new Color(255, 0, 0)));
         }
 
 		/**
