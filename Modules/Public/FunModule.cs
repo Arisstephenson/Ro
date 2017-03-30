@@ -77,6 +77,10 @@ namespace DiscordExampleBot.Modules.Public
         }
         #endregion
 
-
+        [Command("Genderator")]
+        public async Task Genderate()
+        {
+            //TODO: create an array of gender prefixes and suffixes: "Trisexual Ape"
+        }
     }
 }

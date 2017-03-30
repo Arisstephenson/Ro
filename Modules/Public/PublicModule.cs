@@ -46,26 +46,35 @@ namespace DiscordExampleBot.Modules.Public
         }
 
         [Command("pinfo"), Summary("Gets info about mentioned player.")]
-            public async Task GetInfo([Remainder] string mention = "0")
+            public async Task GetInfo([Remainder] string none = "")
         {
-            if (mention == "0")
+            ulong mention = 0;
+            var ids = Context.Message.MentionedUserIds;
+            var first = ids.FirstOrDefault();
+            if (first != 0)
             {
-                mention = MentionUtils.MentionUser(Context.User.Id);
+                mention = first;
             }
-            IGuildUser gusr = await Context.Guild.GetUserAsync(MentionUtils.ParseUser(mention));
-            string userdata =
-                $"{Format.Bold($"@{gusr.Username + "#" + gusr.Discriminator}")}\r" +
-                $"Joined server at {gusr.JoinedAt}.\r" +
-                $"Joined discord at {gusr.CreatedAt}.\r" +
-                $"Roles: ";
-            foreach (ulong id in gusr.RoleIds) {
-                userdata += Context.Guild.GetRole(id).Name + ", ";
+            else
+            {
+                mention = Context.User.Id;
             }
+            IGuildUser gusr = await Context.Guild.GetUserAsync(mention);
+            string roles = "";
+            foreach (ulong id in gusr.RoleIds)
+            {
+                 roles += Context.Guild.GetRole(id).Name + ", ";
+            }
+            roles = roles.TrimEnd(new char[] {',', ' '});
             await Context.Channel.SendMessageAsync($"", false, new EmbedBuilder()
                 .WithColor(Context.Guild.GetRole(gusr.RoleIds.Last()).Color)
-                .WithDescription(userdata).WithTitle($"{gusr.Nickname}")
-                .WithImageUrl($"{gusr.GetAvatarUrl(ImageFormat.Png, 128)}")
-                .Build());
+                .WithThumbnailUrl($"{gusr.GetAvatarUrl(ImageFormat.Png, 128)}")
+                .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Username").WithValue($"{gusr.Username}#{gusr.Discriminator}"))
+                .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Server Join Date").WithValue($"Joined server at {gusr.JoinedAt.GetValueOrDefault().DateTime}."))
+                .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Discord Join Date").WithValue($"Joined discord at {gusr.CreatedAt.DateTime}."))
+                .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Roles").WithValue($"{roles}"))
+
+                );
         }
 
         [Command("help"), Summary("Shows available commands.")]
@@ -79,10 +88,10 @@ namespace DiscordExampleBot.Modules.Public
                 var tempstring = "";
                 tempstring += $"\r {Format.Bold("["+mod.Name+"]")} \r";
                 foreach(CommandInfo com in mod.Commands)
-                {
-                    tempstring += com.Aliases.First() + "\r\r•";
+                {        
+                    tempstring += "• " + com.Aliases.First() + "\r";
                 }
-                ListCommands[i] = tempstring.TrimEnd(new char[] { '\\', 'r', '•' }) + "\n⠀";
+                ListCommands[i] = tempstring;
             }
 
             var application = await Context.Client.GetApplicationInfoAsync();
@@ -172,10 +181,6 @@ namespace DiscordExampleBot.Modules.Public
             );
         }
 
-        [Command("embed"), Summary("creates embed with title, desc, footer, separate with $")]
-            public async Task CreateEmbed(string title = "", string desc = "", string footer = "") {
-            await ReplyAsync("", false, new EmbedBuilder().WithTitle(title).WithDescription(desc).WithFooter(new EmbedFooterBuilder().WithText(footer)).Build());
-        }
 
         //Methods
         private static string GetUptime()
