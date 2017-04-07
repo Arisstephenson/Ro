@@ -5,6 +5,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Collections.Generic;
+using System.IO;
 
 namespace DiscordExampleBot.Modules.Public
 {
@@ -25,7 +26,7 @@ namespace DiscordExampleBot.Modules.Public
         }
         //commands
         [Command("Emojify", RunMode = RunMode.Async), Summary("Emojify's a message")]
-            public async Task Emojify([Remainder] string rem)
+        public async Task Emojify([Remainder] string rem)
         {
             rem = rem.ToLower();
             string estring = string.Empty;
@@ -77,10 +78,70 @@ namespace DiscordExampleBot.Modules.Public
         }
         #endregion
 
-        [Command("Genderator")]
-        public async Task Genderate()
+        [Command("Genderate")]
+        public async Task Genderate([Remainder] string discard)
         {
+            var temp = "";
+            Random rand = new Random();
+            string[] prefixes = File.ReadAllLines("GenderData/prefix.txt");
+            string[] suffixes = File.ReadAllLines("GenderData/suffix.txt");
+            string[] symbols = File.ReadAllLines("GenderData/symbol.txt");
+            if (Context.Message.MentionedUserIds.Count > 0)
+            {
+                var id = Context.Message.MentionedUserIds.First();
+                Random idrand = new Random((int)id);
+                var usr = await Context.Guild.GetUserAsync(id);
+                temp = $"{usr.Username} is a {prefixes[idrand.Next(prefixes.Length - 1)]} {suffixes[idrand.Next(suffixes.Length - 1)]} (symbol: {symbols[idrand.Next(symbols.Length - 1)]})";
+                await ReplyAsync(temp);
+                return;
+            }
+            temp = $"{prefixes[rand.Next(prefixes.Length - 1)]} {suffixes[rand.Next(suffixes.Length - 1)]} (symbol: {symbols[rand.Next(symbols.Length - 1)]})";
+            await ReplyAsync(temp);
             //TODO: create an array of gender prefixes and suffixes: "Trisexual Ape"
+        }
+        [Command("collect"), Summary("Collects points for your server.")]
+        public async Task Collect([Remainder] string discard = "")
+        {
+            if (File.Exists($"data/points/{Context.Guild.Id}") == false)
+            {
+                File.CreateText($"data/points/{Context.Guild.Id}");
+                File.WriteAllText($"data/points/{Context.Guild.Id}", "0");
+            }
+            var points = File.ReadAllText($"data/points/{Context.Guild.Id}");
+            var pointz = Convert.ToInt32(points);
+            pointz++;
+            await ReplyAsync($"Your server now has {pointz}⍟ points!");
+            File.WriteAllText($"data/points/{Context.Guild.Id}", pointz.ToString());
+        }
+        [Command("roll"), Summary("Rolls a die.")]
+        public async Task Role()
+        {
+            Random rand = new Random();
+            int roll = rand.Next(1,6);
+            switch (roll)
+            {
+                case 1:
+                    await ReplyAsync("```\r╭─────────────╮\r│             │\r│             │\r│     ╭─╮     │\r│     ╰─╯     │\r│             │\r│             │\r╰─────────────╯\rYou rolled a one.```");
+                    break;
+                case 2:
+                    await ReplyAsync("```\r╭─────────────╮\r│        ╭─╮  │\r│        ╰─╯  │\r│             │\r│             │\r│ ╭─╮         │\r│ ╰─╯         │\r╰─────────────╯\rYou rolled a two.```");
+                    break;
+                case 3:
+                    await ReplyAsync("```\r╭─────────────╮\r│        ╭─╮  │\r│        ╰─╯  │\r│     ╭─╮     │\r│     ╰─╯     │\r│ ╭─╮         │\r│ ╰─╯         │\r╰─────────────╯\rYou rolled a third.```");
+                    break;
+                case 4:
+                    await ReplyAsync("```\r╭─────────────╮\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r│             │\r│             │\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r╰─────────────╯\rYou rolled a four.```");
+                    break;
+                case 5:
+                    await ReplyAsync("```\r╭─────────────╮\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r│    ╭─╮      │\r│    ╰─╯      │\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r╰─────────────╯\rYou rolled a five.```");
+                    break;
+                case 6:
+                    await ReplyAsync("```\r╭─────────────╮\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r╰─────────────╯\rYou rolled a six.```");
+                    break;
+                default:
+                    await ReplyAsync("Whoops, an error occurred!");
+                    break;
+            }
         }
     }
 }

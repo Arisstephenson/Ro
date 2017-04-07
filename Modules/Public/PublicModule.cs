@@ -45,7 +45,7 @@ namespace DiscordExampleBot.Modules.Public
                 $"Hello {name}!");
         }
 
-        [Command("pinfo"), Summary("Gets info about mentioned player.")]
+        [Command("pinfo", RunMode = RunMode.Async), Summary("Gets info about mentioned player.")]
             public async Task GetInfo([Remainder] string none = "")
         {
             ulong mention = 0;
@@ -67,7 +67,7 @@ namespace DiscordExampleBot.Modules.Public
             }
             roles = roles.TrimEnd(new char[] {',', ' '});
             await Context.Channel.SendMessageAsync($"", false, new EmbedBuilder()
-                .WithColor(Context.Guild.GetRole(gusr.RoleIds.Last()).Color)
+                .WithColor(UppermostRole(gusr as SocketGuildUser).Color)
                 .WithThumbnailUrl($"{gusr.GetAvatarUrl(ImageFormat.Png, 128)}")
                 .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Username").WithValue($"{gusr.Username}#{gusr.Discriminator}"))
                 .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Server Join Date").WithValue($"Joined server at {gusr.JoinedAt.GetValueOrDefault().DateTime}."))
@@ -75,8 +75,15 @@ namespace DiscordExampleBot.Modules.Public
                 .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Roles").WithValue($"{roles}"))
 
                 );
-        }
 
+        }
+        public static SocketRole UppermostRole(SocketGuildUser user)
+        {
+            var sorted = user.Roles
+            .Where(role => role.IsHoisted)
+            .OrderBy(role => role.Position);
+            return sorted.LastOrDefault() ?? user.Guild.EveryoneRole;
+        }
         [Command("help"), Summary("Shows available commands.")]
             public async Task Help()
         {

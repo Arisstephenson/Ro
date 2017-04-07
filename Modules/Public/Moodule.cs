@@ -57,7 +57,7 @@ namespace DiscordExampleBot.Modules.Public
                     return;
                 }
             }
-            var b = Convert.ToUInt32("a");
+            var b = Int32.Parse(a);
             switch ( b )
             {
                 case 1:

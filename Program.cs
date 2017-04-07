@@ -86,13 +86,39 @@ namespace DiscordExampleBot
         {
             // Define the DiscordSocketClient
             client = new DiscordSocketClient();
-            client.Log += (async x => {
-                await Console.Error.WriteLineAsync(x.Message);
+            client.Log += (x => {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write($"[{DateTime.Now.GetDateTimeFormats()[110]}]");
+                switch ((int)x.Severity)
+                {
+                    case 0:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        break;
+                    case 1:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        break;
+                    case 2:
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        break;
+                    case 3:
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        break;
+                    case 4:
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        break;
+                    case 5:
+                        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                        break;
+                    default:
+                        Console.ForegroundColor = ConsoleColor.White;
+                        break;
+                } //sets color according to severity
+                Console.WriteLine(x.Message);
+                return Task.CompletedTask;
             });
 			var token = File.ReadAllText("token.txt");
 
             // Login and connect to Discord.
-            Console.WriteLine("Logging in...");
             await client.LoginAsync(TokenType.Bot, token).ContinueWith(x =>
            {
                client.SetStatusAsync(UserStatus.Online);
@@ -101,20 +127,18 @@ namespace DiscordExampleBot
             await client.StartAsync();
             
             var map = new DependencyMap();
-            Console.WriteLine("Adding Client to map...");
             map.Add(client);
 
             handler = new CommandHandler();
-            Console.WriteLine("Installing map...");
             await handler.Install(map);
 
             // Block this program until it is closed.
             client.JoinedGuild += (async x => {
-                await x.DefaultChannel.SendMessageAsync($"Hello I am Ro 😄.\rI am currently in early development so please report any problems to @Ariss#4202.\rTHANKS and have fun with me :).");
-                Console.WriteLine($"I have joined the server {x.Name} :P");
+                await x.DefaultChannel.SendMessageAsync($"Hello I am 😄.\rI am currently in early development so please report any problems to @Ariss#4202.\rTHANKS and have fun with me :).");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"I have joined the server {x.Name}.");
                 return;
             });
-            Console.WriteLine("Ready!");
             await GetInput();
             await Task.Delay(-1);
         }
@@ -139,7 +163,9 @@ namespace DiscordExampleBot
                     Console.WriteLine("Logging Out...");
                     await client.LogoutAsync();
                     Console.WriteLine("The bot has been shut down, until next time ;)");
-
+                    Console.WriteLine("Press any key to exit...");
+                    Console.ReadKey();
+                    Environment.Exit(0);
                 }
             }
             return;

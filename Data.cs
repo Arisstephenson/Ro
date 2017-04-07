@@ -51,5 +51,12 @@ namespace DiscordExampleBot
             sr.Dispose();
             return tempstring;
         }
+
+        public string MakeGender()
+        {
+            var tempstring = "";
+            return tempstring;
+
+        }
     }
 }

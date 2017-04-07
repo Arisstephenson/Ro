@@ -19,8 +19,35 @@ namespace DiscordExampleBot
             commands = new CommandService();
             //_map.Add(commands);
             map = _map;
-            commands.Log += (async x => {
-                await Console.Error.WriteLineAsync(x.Message);
+            commands.Log += (x => {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write($"[{DateTime.Now.GetDateTimeFormats()[110]}]");
+                switch ((int)x.Severity)
+                {
+                    case 0:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        break;
+                    case 1:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        break;
+                    case 2:
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        break;
+                    case 3:
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        break;
+                    case 4:
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        break;
+                    case 5:
+                        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                        break;
+                    default:
+                        Console.ForegroundColor = ConsoleColor.White;
+                        break;
+                } //sets color according to severity
+                Console.WriteLine(x.Message);
+                return Task.CompletedTask;
             });
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
             client.MessageReceived += HandleCommand;

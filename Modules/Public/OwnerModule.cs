@@ -28,19 +28,17 @@ namespace DiscordExampleBot.Modules.Public
             public async Task Massrole([Remainder] string rolename)
         {
             Dictionary<string, IRole> roledict = Context.Guild.Roles.ToDictionary(x => { return x.Name; }, y => { return y; });
-            IRole myrole;
-            if (roledict.TryGetValue(rolename, out myrole) == false)
+            if (roledict.TryGetValue(rolename, out IRole myrole) == false)
             {
                 await ReplyAsync("Role not found!");
                 return;
             }
             var _users = await Context.Guild.GetUsersAsync();
             var users = _users.ToArray();
-            Console.WriteLine($"Beginning massrole...");
             for (int i = 0; i < 5000; i++)
             {
                 var usr = users[i];
-                Console.WriteLine($"Adding role to {usr}...");
+                Console.Write($".");
                 await Task.Delay(3000).ContinueWith(x => {
                     Setrole(usr, myrole);
                 });
@@ -56,7 +54,6 @@ namespace DiscordExampleBot.Modules.Public
         [Command("getfile"), Summary("Gets a retrieves a file from bot's host"), RequireOwner]
             public async Task GetFile([Remainder] string filename)
         {
-            Console.WriteLine("Getting File...");
             Stream x = new FileStream(filename, FileMode.Open);
             await Context.Channel.SendFileAsync(x, filename, null, false, null);
         }
@@ -64,7 +61,6 @@ namespace DiscordExampleBot.Modules.Public
         [Command("dir"), Summary("returns files in directory from host"), RequireOwner]
             public async Task GetDir([Remainder] string filename)
         {
-            Console.WriteLine("Getting File...");
             string dirs = "";
             foreach (FileSystemInfo fs in new DirectoryInfo(filename).GetFileSystemInfos())
             {
@@ -83,7 +79,6 @@ namespace DiscordExampleBot.Modules.Public
         [Command("say"), Alias("echo"), RequireOwner, Summary("Echos the provided input.")]
             public async Task Say([Remainder] string input)
         {
-            Console.WriteLine("Mocking...");
             await ReplyAsync(input);
         }
 
