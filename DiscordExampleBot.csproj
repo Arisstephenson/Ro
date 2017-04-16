@@ -12,9 +12,10 @@
   
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="1.0.0-rc-00668" />
-    <PackageReference Include="Discord.Net.Commands" Version="1.0.0-rc-00668" />
-    <PackageReference Include="Discord.Net.WebSocket" Version="1.0.0-rc-00668" />
+    <PackageReference Include="Discord.Addons.InteractiveCommands" Version="1.2.2" />
+    <PackageReference Include="Discord.Net" Version="1.0.0-rc2-00701" />
+    <PackageReference Include="Discord.Net.Commands" Version="1.0.0-rc2-00701" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="1.0.0-rc2-00701" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="System.Threading" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
