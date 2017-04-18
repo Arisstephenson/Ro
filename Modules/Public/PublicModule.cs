@@ -84,9 +84,10 @@ namespace DiscordExampleBot.Modules.Public
             .OrderBy(role => role.Position);
             return sorted.LastOrDefault() ?? user.Guild.EveryoneRole;
         }
-        [Command("help"), Summary("Shows available commands.")]
+        [Command("help", RunMode = RunMode.Async), Summary("Shows available commands.")]
             public async Task Help()
         {
+            var editmsg = await ReplyAsync("Fetching commands, please wait...");
             var marray = _mis.ToArray();
             string[] ListCommands = new string[marray.Length];
             for (int i = 0; i < marray.Length; i++)

@@ -6,6 +6,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Net.Http;
 using Discord.Rest;
+using System.IO;
 using System.Collections.Generic;
 namespace DiscordExampleBot.Modules.Public
 {
@@ -68,7 +69,7 @@ namespace DiscordExampleBot.Modules.Public
             }
             await ReplyAsync($"{tempstring}");
         }
-        [Command("lobby", RunMode = RunMode.Async), Summary("Created a temporary lobby")]
+        /**[Command("lobby", RunMode = RunMode.Async), Summary("Created a temporary lobby")]
         public async Task Lobby()
         {
             var user = Context.User as IGuildUser;
@@ -84,7 +85,7 @@ namespace DiscordExampleBot.Modules.Public
             });
             await Task.Delay(2000).ContinueWith(x =>
             {
-                socketuser.Discord.UserVoiceStateUpdated += Discord_UserVoiceStateUpdated;
+                Context.Discord.UserVoiceStateUpdated += Discord_UserVoiceStateUpdated;
 
             });
             async Task Discord_UserVoiceStateUpdated(SocketUser arg1, SocketVoiceState arg2, SocketVoiceState arg3)
@@ -95,9 +96,10 @@ namespace DiscordExampleBot.Modules.Public
                     socketuser.Discord.UserVoiceStateUpdated -= Discord_UserVoiceStateUpdated;
                 }
             }
-        }
+        }**/
 
-
+        /**
+         * Was messing around with httpclient
         [Command("karnageboards")]
         public async Task Search()
         {
@@ -117,7 +119,27 @@ namespace DiscordExampleBot.Modules.Public
                 }
             }
         }
-
+    **/
+    /**
+    [Command("track", RunMode = RunMode.Async), RequireOwner]
+    public async Task Track()
+        {
+            await ReplyAsync("Now tracking joins...");
+            //var file = File.ReadAllLines("data\\UserLog.txt");
+            var userlist = "";
+            Repeat();
+            async void Repeat()
+            {
+                await Task.Delay(1000 * 60).ContinueWith(async x =>
+                {
+                    var users = await Context.Guild.GetUsersAsync();
+                    userlist += $"{ users.Count.ToString()}, ";
+                    File.WriteAllText("UserLog.txt", userlist);
+                });
+                Repeat();
+            }
+        }
+    **/
     }
 
 }

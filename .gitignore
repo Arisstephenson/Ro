@@ -8,6 +8,7 @@
 # config
 bin/Debug/token.txt
 bin/Release/token.txt
+obj/project.assets.json
 token.txt
 
 # build

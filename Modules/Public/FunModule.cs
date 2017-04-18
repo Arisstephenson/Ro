@@ -36,6 +36,7 @@ namespace DiscordExampleBot.Modules.Public
             }
             await ReplyAsync(estring);
         }
+        /**
         #region Tag Commands
         [Command("tag")]
         [Summary("Returns the chosen tag.")]
@@ -77,7 +78,7 @@ namespace DiscordExampleBot.Modules.Public
             await ReplyAsync(string.Join(", ", tagdict.Keys));
         }
         #endregion
-
+    **/
         [Command("Genderate")]
         public async Task Genderate([Remainder] string discard)
         {
@@ -139,7 +140,7 @@ namespace DiscordExampleBot.Modules.Public
                     await ReplyAsync("```\r╭─────────────╮\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r╰─────────────╯\rYou rolled a six.```");
                     break;
                 default:
-                    await ReplyAsync("Whoops, an error occurred!");
+                    await ReplyAsync("Whoops, your die fell off the table!");
                     break;
             }
         }
