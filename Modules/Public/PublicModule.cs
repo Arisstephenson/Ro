@@ -169,7 +169,7 @@ namespace DiscordExampleBot.Modules.Public
             await ReplyAsync($"Do you need help with Ro? Visit the support server: https://discord.gg/4QcF7fx");
         }
 
-        [Command("info"), Summary("Detailed info about the bot.")]
+        [Command("botinfo"), Summary("Detailed info about the bot.")]
             public async Task Info()
         {
             Console.WriteLine("Providing Information...");
