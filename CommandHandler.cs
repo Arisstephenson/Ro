@@ -72,7 +72,10 @@ namespace DiscordExampleBot
 
             //Log Commands
             var gusr = (Discord.IGuildUser)message.Author;
-            File.AppendAllText("commands.log", Environment.NewLine + $"[{DateTime.Now.GetDateTimeFormats()[110]}]{message.Content}(by {message.Author.Username}#{message.Author.Discriminator}(in {gusr.Guild.Name}))");
+            File.AppendAllText("commands.log", Environment.NewLine +
+                $"[{DateTime.Now.GetDateTimeFormats()[110]}]{message.Content}" +
+                $"(by {message.Author.Username}#{message.Author.Discriminator}" +
+                $"(in {gusr.Guild.Name}))");
             // If the command failed, notify the user
             if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                 await message.Channel.SendMessageAsync($"**Error:** {result.ErrorReason}");
