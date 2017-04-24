@@ -10,7 +10,7 @@ using System.IO;
 using System.Collections.Generic;
 namespace DiscordExampleBot.Modules.Public
 {
-    [Name("Utility Commands")]
+    [Name("Utility Commands ⚙")]
     public class UtilityModule : ModuleBase
     {
         //fields

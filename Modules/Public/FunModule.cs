@@ -9,7 +9,7 @@ using System.IO;
 
 namespace DiscordExampleBot.Modules.Public
 {
-    [Name("Fun Commands")]
+    [Name("Fun Commands 🎲")]
     public class FunModule : ModuleBase
     {
         //fields
@@ -114,11 +114,11 @@ namespace DiscordExampleBot.Modules.Public
             await ReplyAsync($"Your server now has {pointz}⍟ points!");
             File.WriteAllText($"data/points/{Context.Guild.Id}", pointz.ToString());
         }
-        [Command("roll"), Summary("Rolls a die.")]
+        [Command("roll", RunMode = RunMode.Async), Summary("Rolls a die.")]
         public async Task Role()
         {
             Random rand = new Random();
-            int roll = rand.Next(1,6);
+            int roll = rand.Next(1,7);
             switch (roll)
             {
                 case 1:
@@ -128,7 +128,7 @@ namespace DiscordExampleBot.Modules.Public
                     await ReplyAsync("```\r╭─────────────╮\r│        ╭─╮  │\r│        ╰─╯  │\r│             │\r│             │\r│ ╭─╮         │\r│ ╰─╯         │\r╰─────────────╯\rYou rolled a two.```");
                     break;
                 case 3:
-                    await ReplyAsync("```\r╭─────────────╮\r│        ╭─╮  │\r│        ╰─╯  │\r│     ╭─╮     │\r│     ╰─╯     │\r│ ╭─╮         │\r│ ╰─╯         │\r╰─────────────╯\rYou rolled a third.```");
+                    await ReplyAsync("```\r╭─────────────╮\r│        ╭─╮  │\r│        ╰─╯  │\r│     ╭─╮     │\r│     ╰─╯     │\r│ ╭─╮         │\r│ ╰─╯         │\r╰─────────────╯\rYou rolled a three.```");
                     break;
                 case 4:
                     await ReplyAsync("```\r╭─────────────╮\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r│             │\r│             │\r│ ╭─╮    ╭─╮  │\r│ ╰─╯    ╰─╯  │\r╰─────────────╯\rYou rolled a four.```");
@@ -143,6 +143,23 @@ namespace DiscordExampleBot.Modules.Public
                     await ReplyAsync("Whoops, your die fell off the table!");
                     break;
             }
+        }
+        [Command("rsi", RunMode = RunMode.Async)]
+        public async Task RSI()
+        {
+            var guilds = _cl.Guilds;
+            var gc = guilds.Count;
+            var rand = new Random();
+            var pick = rand.Next(0, gc);
+            var invite = guilds.ToArray()[pick];
+            var invs = await invite.GetInvitesAsync();
+            while (invs.First() == null)
+            {
+                pick = rand.Next(0, gc);
+                invite = guilds.ToArray()[pick];
+                invs = await invite.GetInvitesAsync();
+            }
+            await ReplyAsync($"**We found an invite to {invite.Name}!**\r{invs.First().Url}");
         }
     }
 }

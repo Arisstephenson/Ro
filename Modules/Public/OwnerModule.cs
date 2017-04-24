@@ -8,10 +8,11 @@ using System.Collections.Generic;
 using System.IO;
 namespace DiscordExampleBot.Modules.Public
 {
-    [Name("Owner Commands")]
+    [Name("Owner Commands 🔧")]
     public class OwnerModule : ModuleBase
     {
         //fields
+        public int time;
         public Data dat;
         public ModuleInfo _mi;
         public DiscordSocketClient _cl;
@@ -82,5 +83,50 @@ namespace DiscordExampleBot.Modules.Public
             await ReplyAsync(input);
         }
 
+        [Command("stop"), RequireOwner]
+        public async Task Stop([Remainder] string discard = "")
+        {
+            await ReplyAsync("Shutting down bot.");
+            await _cl.SetStatusAsync(UserStatus.Invisible);
+            await _cl.StopAsync();
+            await _cl.LogoutAsync();
+            Environment.Exit(0);
+        }
+        [Command("restart"), RequireOwner]
+        public async Task Restart([Remainder] string discard = "")
+        {
+            var token = File.ReadAllText("token.txt");
+            await ReplyAsync("Restarting bot.");
+            await _cl.StopAsync();
+            await _cl.LogoutAsync();
+            await _cl.LoginAsync(TokenType.Bot, token);
+            await _cl.StartAsync();
+        }
+        [Command("checkguilds")]
+        public async Task CheckGuilds([Remainder] string discard = "")
+        {
+            var guilds = _cl.Guilds.Count;
+            var rguilds = File.ReadAllText("servercount.dat");
+            var embed = new EmbedBuilder()
+                .WithColor(new Color(0, 0, 255))
+                .WithTitle("Recorded Servers")
+                .AddInlineField("Server Count", guilds.ToString())
+                .AddInlineField("Servers Recorded", rguilds);
+            await ReplyAsync("", false, embed);
+        }
+        [Command("tm", RunMode = RunMode.Async), RequireOwner]
+        public async Task TrackMembers()
+        {
+            await ReplyAsync("now tracking member count...");
+            _cl.UserJoined += recordusers;
+            _cl.UserLeft += recordusers;
+            async Task recordusers(object var1)
+            {
+                var guild = Context.Guild as SocketGuild;
+                var online = guild.Users.Where(x => x.Status == UserStatus.Online || x.Status == UserStatus.Idle || x.Status == UserStatus.DoNotDisturb || x.Status == UserStatus.AFK);
+                File.AppendAllText("Memberslist.csv", $"{DateTime.Now},{guild.MemberCount},{online.Count()}" + Environment.NewLine);
+            }
+
+        }
     }
 }

@@ -4,6 +4,8 @@ using System.IO;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DiscordExampleBot
 {
@@ -119,11 +121,7 @@ namespace DiscordExampleBot
 			var token = File.ReadAllText("token.txt");
 
             // Login and connect to Discord.
-            await client.LoginAsync(TokenType.Bot, token).ContinueWith(x =>
-           {
-               client.SetStatusAsync(UserStatus.Online);
-               client.SetGameAsync("Type >help!", "", StreamType.Twitch);
-           });
+            await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
             
             var map = new DependencyMap();
@@ -132,21 +130,59 @@ namespace DiscordExampleBot
             handler = new CommandHandler();
             await handler.Install(map);
 
+            client.Ready += Client_Ready;
+            Task Client_Ready()
+            {
+                client.SetStatusAsync(UserStatus.Online);
+                client.SetGameAsync("Type >help!");
+                return Task.CompletedTask;
+            }
             // Block this program until it is closed.
+            client.LeftGuild += x =>
+            {
+                int count = int.Parse(File.ReadAllText("servercount.dat"));
+                count--;
+                File.WriteAllText("servercount.dat", count.ToString());
+                return Task.CompletedTask;
+            };
             client.JoinedGuild += (async x => {
-                await x.DefaultChannel.SendMessageAsync($"Hello I am 😄.\rI am currently in early development so please report any problems to @Ariss#4202.\rTHANKS and have fun with me :).");
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($"I have joined the server {x.Name}.");
-                return;
+                await x.DefaultChannel.SendMessageAsync($"Hello I am {client.CurrentUser.Username} 😄.\rI am currently in early development so please report any problems to @Ariss#4202.\rType >help to get started!");
+                int count = int.Parse(File.ReadAllText("servercount.dat"));
+                count++;
+                File.WriteAllText("servercount.dat", count.ToString());
+                var g = x as IGuild;
+                var channels = await g.GetChannelsAsync();
+                    GuildPermissions perms = GuildPermissions.None;
+                    perms = g.EveryoneRole.Permissions.Modify(sendMessages: false);
+                    Dictionary<string, ulong> roledict = g.Roles.ToDictionary(a => { return a.Name; }, y => { return y.Id; });
+                    IRole muteRole = null;
+                    if (roledict.ContainsKey("Muted") == false)
+                    {
+                        muteRole = await g.CreateRoleAsync("Muted", perms, new Color(50, 50, 50), true);
+                    }
+                    else
+                    {
+
+                        roledict.TryGetValue("Muted", out ulong id);
+                        muteRole = g.GetRole(id);
+                    }
+                    OverwritePermissions per = new OverwritePermissions();
+                    per = OverwritePermissions.InheritAll.Modify(sendMessages: PermValue.Deny);
+                    foreach (IGuildChannel chan in channels)
+                    {
+                        await chan.AddPermissionOverwriteAsync(muteRole, per);
+                    }
             });
             await GetInput();
             await Task.Delay(-1);
         }
 
+
+
         private Task Log(LogMessage msg)
         {
             Console.WriteLine(msg.ToString());
-			return System.Threading.Tasks.Task.CompletedTask;
+			return Task.CompletedTask;
         }
         async private Task GetInput()
         {
@@ -170,5 +206,7 @@ namespace DiscordExampleBot
             }
             return;
         }
+
+
     }
 }

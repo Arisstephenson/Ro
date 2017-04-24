@@ -10,3 +10,15 @@ C:\Users\ariss_000\Desktop\Ro-master\Ro-master\obj\Debug\netcoreapp1.1\DiscordEx
 C:\Users\ariss_000\Desktop\Ro-master\Ro-master\obj\Debug\netcoreapp1.1\DiscordExampleBot.AssemblyInfo.cs
 C:\Users\ariss_000\Desktop\Ro-master\Ro-master\obj\Debug\netcoreapp1.1\DiscordExampleBot.dll
 C:\Users\ariss_000\Desktop\Ro-master\Ro-master\obj\Debug\netcoreapp1.1\DiscordExampleBot.pdb
+C:\Users\Ariss\Desktop\Ro\bin\Debug\netcoreapp1.1\Microsoft.DiaSymReader.Native.x86.dll
+C:\Users\Ariss\Desktop\Ro\bin\Debug\netcoreapp1.1\Microsoft.DiaSymReader.Native.amd64.dll
+C:\Users\Ariss\Desktop\Ro\bin\Debug\netcoreapp1.1\Microsoft.DiaSymReader.Native.arm.dll
+C:\Users\Ariss\Desktop\Ro\bin\Debug\netcoreapp1.1\DiscordExampleBot.deps.json
+C:\Users\Ariss\Desktop\Ro\bin\Debug\netcoreapp1.1\DiscordExampleBot.runtimeconfig.json
+C:\Users\Ariss\Desktop\Ro\bin\Debug\netcoreapp1.1\DiscordExampleBot.runtimeconfig.dev.json
+C:\Users\Ariss\Desktop\Ro\bin\Debug\netcoreapp1.1\DiscordExampleBot.dll
+C:\Users\Ariss\Desktop\Ro\bin\Debug\netcoreapp1.1\DiscordExampleBot.pdb
+C:\Users\Ariss\Desktop\Ro\obj\Debug\netcoreapp1.1\DiscordExampleBot.csprojResolveAssemblyReference.cache
+C:\Users\Ariss\Desktop\Ro\obj\Debug\netcoreapp1.1\DiscordExampleBot.AssemblyInfo.cs
+C:\Users\Ariss\Desktop\Ro\obj\Debug\netcoreapp1.1\DiscordExampleBot.dll
+C:\Users\Ariss\Desktop\Ro\obj\Debug\netcoreapp1.1\DiscordExampleBot.pdb

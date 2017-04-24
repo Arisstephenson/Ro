@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 namespace DiscordExampleBot.Modules.Public
 {
-    [Name("Public Commands")]
+    [Name("Public Commands 🌎")]
     public class PublicModule : ModuleBase
     {
         //fields
@@ -35,17 +35,50 @@ namespace DiscordExampleBot.Modules.Public
             await ReplyAsync(
                 $"A user with `MANAGE_SERVER` can invite me to your server here: <https://discordapp.com/oauth2/authorize?client_id={application.Id}&scope=bot&permissions=8>");
         }
-
-        [Command("hello"), Summary("Says hello!")]
-            public async Task Hello()
+        [Command("info")]
+        public async Task Owner([Remainder] string inf = "")
         {
-            Console.WriteLine("Saying Hello...");
-            var name = Context.User.Username;
-            await ReplyAsync(
-                $"Hello {name}!");
+            if (inf == "server")
+            {
+                var guild = Context.Guild;
+                var owner = await guild.GetUserAsync(guild.OwnerId);
+                var members = await guild.GetUsersAsync();
+                var voicechannels = await guild.GetVoiceChannelsAsync();
+                var textchannels = await guild.GetTextChannelsAsync();
+                var roles = guild.Roles;
+                var orderedroles = roles.OrderBy(x => x.Id);
+                var rolementions = orderedroles.Select(x =>
+                {
+                    return x.Mention;
+                });
+                var textmentions = textchannels.Select(x =>
+                {
+                    return x.Mention;
+                });
+                var defaultchannel = await guild.GetTextChannelAsync(guild.DefaultChannelId);
+                var embed = new EmbedBuilder()
+                    .WithTitle(Format.Underline(Format.Code("Server Info")))
+                    .WithColor(new Color(0.9f, 0.9f, 0.1f))
+                    .WithThumbnailUrl(guild.IconUrl == null ? Context.Message.Author.GetAvatarUrl() : guild.IconUrl)
+                    .WithCurrentTimestamp()
+                    .WithUrl($"https://discordapp.com/channels/{guild.Id}/{guild.DefaultChannelId}")
+                    .AddInlineField("Name", guild.Name)
+                    .AddInlineField("Owner", owner.Mention)
+                    .AddInlineField("Verification Level", guild.VerificationLevel)
+                    .AddInlineField("Member Count", members.Count())
+                    .AddInlineField("Creation Date", guild.CreatedAt)
+                    .AddInlineField("Voice Region", await Context.Client.GetVoiceRegionAsync(guild.VoiceRegionId))
+                    .AddInlineField("Voice Channels", String.Join(", ", voicechannels))
+                    .AddInlineField("Text Channels", String.Join(", ", textmentions))
+                    .AddInlineField("Roles", string.Join(", ", rolementions));
+                var message = await ReplyAsync("", false, embed);
+            }
+            else
+            {
+                await ReplyAsync("Info not found! Use >info help to see usage.");
+            }
         }
-
-        [Command("pinfo", RunMode = RunMode.Async), Summary("Gets info about mentioned player.")]
+        [Command("uinfo", RunMode = RunMode.Async), Summary("Gets info about mentioned user.")]
             public async Task GetInfo([Remainder] string none = "")
         {
             ulong mention = 0;
@@ -63,13 +96,16 @@ namespace DiscordExampleBot.Modules.Public
             string roles = "";
             foreach (ulong id in gusr.RoleIds)
             {
-                 roles += Context.Guild.GetRole(id).Name + ", ";
+                 roles += Context.Guild.GetRole(id).Mention + ", ";
             }
             roles = roles.TrimEnd(new char[] {',', ' '});
             await Context.Channel.SendMessageAsync($"", false, new EmbedBuilder()
                 .WithColor(UppermostRole(gusr as SocketGuildUser).Color)
                 .WithThumbnailUrl($"{gusr.GetAvatarUrl(ImageFormat.Png, 128)}")
                 .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Username").WithValue($"{gusr.Username}#{gusr.Discriminator}"))
+                .AddInlineField("ID", gusr.Id)
+                .AddInlineField("Status", gusr.Status)
+                .AddInlineField("Voice Channel", gusr.VoiceChannel != null ? gusr.VoiceChannel.Name : "Not in a channel")
                 .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Server Join Date").WithValue($"Joined server at {gusr.JoinedAt.GetValueOrDefault().DateTime}."))
                 .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Discord Join Date").WithValue($"Joined discord at {gusr.CreatedAt.DateTime}."))
                 .AddField(new EmbedFieldBuilder().WithIsInline(true).WithName("Roles").WithValue($"{roles}"))
@@ -85,8 +121,13 @@ namespace DiscordExampleBot.Modules.Public
             return sorted.LastOrDefault() ?? user.Guild.EveryoneRole;
         }
         [Command("help", RunMode = RunMode.Async), Summary("Shows available commands.")]
-            public async Task Help()
+            public async Task Help([Remainder] string command = "")
         {
+            if (command != "")
+            {
+                await ReplyAsync(GetSummary(command));
+                return;
+            }
             var editmsg = await ReplyAsync("Fetching commands, please wait...");
             var marray = _mis.ToArray();
             string[] ListCommands = new string[marray.Length];
@@ -109,15 +150,29 @@ namespace DiscordExampleBot.Modules.Public
             {
                 string mystring = ListCommands[i];
                 string[] mystrings = mystring.Split(']');
-                myembed.AddField(new EmbedFieldBuilder().WithValue(mystrings[1].TrimStart('*') + "").WithName("\n" + mystrings[0] + "]**").WithIsInline(true));
-                //myembed.AddField(new EmbedFieldBuilder().WithValue("⠀").WithName("⠀").WithIsInline(true));
-                //myembed.AddField(new EmbedFieldBuilder().WithValue("⠀").WithName("⠀").WithIsInline(true)); //for spacing to compensate for icon
-                // (i == ListCommands.Length - 1) { continue; }
-                //myembed.AddField(new EmbedFieldBuilder().WithValue("⠀").WithName("⠀").WithIsInline(true));
+                myembed.AddInlineField("\n" + mystrings[0] + "]**", mystrings[1].TrimStart('*') + "");
             }
             await ReplyAsync("", false, myembed.WithThumbnailUrl(application.IconUrl).WithColor(new Color(255, 0, 0)));
         }
 
+        string GetSummary(string command)
+        {
+            List<CommandInfo> commands = new List<CommandInfo>();
+            foreach (ModuleInfo mod in _mis)
+            {
+                commands.AddRange(mod.Commands);
+            }
+            var matches = commands.Where(x => x.Aliases.Contains(command.ToLower()));
+            if (matches.Count() > 1)
+            {
+                return ($"Multiple Commands were found, here is the summary of the first:\r{matches.First().Summary}");
+            }
+            else if (matches.Count() == 1)
+            {
+                return ($"{matches.First().Summary}");
+            }
+            else return ($"Command not found!");
+        }
 		/**
 		 * This command litterally craps itself for afro
         [Command("set")]

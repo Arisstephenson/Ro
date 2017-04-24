@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Ro
 {
-    [Name("Moderation Commands")]
+    [Name("Moderation Commands 👮")]
     public class ModerationModule : ModuleBase
 	{
         //fields
@@ -98,7 +98,22 @@ namespace Ro
             await ReplyAsync($"{Context.Message.Author.Mention}, successfully cleared {b} messages!");
         }
 
+        [Command("ban"), RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task Ban(string mention, [Remainder] string reason = "No reason specified.")
+        {
+            var user = await Context.Guild.GetUserAsync(Context.Message.MentionedUserIds.First());
+            var dm = await user.CreateDMChannelAsync();
+            await dm.SendMessageAsync($"You were banned from {Context.Guild.Name} for the following reason:\r{Format.Bold(reason)}");
+            await Context.Guild.AddBanAsync(user);
+        }
 
-
+        [Command("kick"), RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task Kick(string mention, [Remainder] string reason = "No reason specified.")
+        {
+            var user = await Context.Guild.GetUserAsync(Context.Message.MentionedUserIds.First());
+            var dm = await user.CreateDMChannelAsync();
+            await dm.SendMessageAsync($"You were kicked from {Context.Guild.Name} for the following reason:\r{Format.Bold(reason)}");
+            await user.KickAsync();
+        }
     }
 }
